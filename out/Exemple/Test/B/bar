@@ -1,0 +1,6 @@
+SYNOPSIS
+    cat [OPTION] [FILE]...
+ 
+DESCRIPTION
+    Concatenate FILE(s), or standard input, to standard out-
+    put.
