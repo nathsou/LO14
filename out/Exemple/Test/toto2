@@ -1,10 +1,10 @@
 NAME
-    ls - list directory contents
- 
+ls - list directory contents
+
 SYNOPSIS
-    ls [OPTION]... [FILE]...
- 
+ls [OPTION]... [FILE]...
+
 DESCRIPTION
-    List information about the FILEs.
+List information about the FILEs.
 DESCRIPTION
-    man formats and displays the on-line manual pages.
+man formats and displays the on-line manual pages.

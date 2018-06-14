@@ -2,26 +2,31 @@
 
 declare -r port=$1
 
-#check if port argument is given and valid
+#check if port argument was given and is valid
 if ! [[ $# = 1 && $port =~ ^[0-9]+$ ]]; then
-    echo -e "Usage : $0 port, where port is between 1 and 65535"
+    echo "Usage : $0 port, where port is between 1 and 65535"
     exit 1
 fi
 
-mkfifo stdout_fifo
+declare -r FIFO=fifo
+
+##create the fifo if it doesn't exist 
+[ -e "$FIFO" ] || mkfifo "$FIFO"
 
 function clean_fifo() {
-    rm -f stdout_fifo;
+    rm -f fifo;
 }
 trap clean_fifo EXIT
 
+function interaction() {
+    local mode args
+    while true; do
+        read mode args || exit -1
+        /bin/bash vsh_server.sh $mode $args
+    done
+}
 
 echo "Listening on port $port"
-#listen for commands and redirect the standard outpout to the client
 while true; do
-   #TODO: Send arguments to ./vsh_server.sh
-   nc -l $port <stdout_fifo | ./vsh_server.sh>stdout_fifo
+    interaction < "$FIFO" | nc -l -k $port > "$FIFO"
 done
-
-
-

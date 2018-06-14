@@ -1,5 +1,5 @@
 #extracts a text archive
-arch=$1
+declare -r arch=$1
 
 #remove '/' at the end of a directory name
 function clean_dir_name(){
@@ -9,9 +9,7 @@ function clean_dir_name(){
 
 root_dir=$(clean_dir_name $2)
 
-
 function get_header(){
-    
     info=$(head -n 1 $arch)
     header_start=$(echo $info | cut -d ':' -f1)
     header_end=$(expr $(echo $info | cut -d ':' -f2) - 1)
@@ -19,7 +17,6 @@ function get_header(){
 }
 
 function get_body(){
-    
     body_start=$(head -n 1 $arch | cut -d ':' -f2)
     tail -n+$body_start $arch
 }
@@ -30,7 +27,7 @@ function get_body_lines(){
     nb=$2
     to=$(($from + $nb - 1))
 
-    get_body $arch | head -n $to | tail -n+$from
+    get_body | head -n $to | tail -n+$from
 }
 
 function dir_exists(){
@@ -76,10 +73,7 @@ function change_permissions(){
 function extract_dir(){
     dir=$1
     perms=$2
-
     mkdir -p "$root_dir/$dir"
-
-    echo $dir
 
     get_dir_contents "$dir" |
     while read -r line; do
@@ -88,25 +82,22 @@ function extract_dir(){
         type=${rights:0:1}
         #check element type (directory or file)
         if [[ $type = "d" ]]; then
-            echo "dir $dir/$name"
             mkdir -p "$root_dir/$dir"
+            change_permissions "$root_dir/$dir" ${rights:1}
         else
-            echo "file $dir/$name"
             content_start=$(echo $line | cut -d ' ' -f4)
             content_len=$(echo $line | cut -d ' ' -f5)
-            get_body_lines $content_start $content_len >> "$root_dir/$dir/$name"
+            get_body_lines $content_start $content_len > "$root_dir/$dir/$name"
+            change_permissions "$root_dir/$dir/$name" ${rights:1}
         fi
-
-        change_permissions "$root_dir/$dir/$name" ${rights:1}
     done
-    echo ""
 }
 
 function extract_archive(){
-    for dir in $(grep "^directory" $arch); do
-        if [[ $dir != "directory" ]]; then
-            extract_dir $(clean_dir_name $dir)
-        fi
+    grep "^directory" $arch |
+    while read -r dir; do
+        d=$(echo $dir | cut -d ' ' -f2)
+        extract_dir $(clean_dir_name $d)
     done
 }
 
