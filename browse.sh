@@ -44,8 +44,8 @@ function vsh_ls(){
 
     dir=$(grep $path $archive | sed "s:directory $path/::g" | sed "s:directory $root::g" | sed 'y;/;:;' | awk -F":" '{print $1}' | awk '!a[$0]++' | sed '/^$/d' | sed 's:$:/:g') 
     working_dir=$(echo $path | sed 's:/:\\/:g' )
-    files=$(awk "/^directory $path(\/$|$)/,/^@$/ {print}" $archive | awk 'NF==5 && !/x/ {print $1}' )
-    exe=$(awk "/^directory $path(\/$|$)/,/^@$/ {print}" $archive | awk 'NF==5 && /x/ {print $1}' | sed 's/$/*/g' )
+    files=$(awk "/^directory $working_dir(\/$|$)/,/^@$/ {print}" $archive | awk 'NF==5 && !/x/ {print $1}' )
+    exe=$(awk "/^directory $working_dir(\/$|$)/,/^@$/ {print}" $archive | awk 'NF==5 && /x/ {print $1}' | sed 's/$/*/g' )
     working_dir=$(echo $path | sed 's:\\/:/:g' )
     echo $dir $exe $files
 }
