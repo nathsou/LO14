@@ -50,6 +50,18 @@ function vsh_ls(){
     echo $dir $exe $files
 }
 
+function vsh_cat {
+    arg=$1
+    path=$(cat /tmp/projet_path.txt)
+    header_end=$(grep -n ^@$ $archive | tail -1 | awk -F: '{print $1}')
+    file_start=$(grep $arg $archive | awk '{print $4}' )
+    file_size=$(grep $arg $archive | awk '{print $5}' )
+    true_file_start=$((file_start + header_end))
+    true_file_end=$((file_start + file_size + header_end - 1))
+    sed -n "${true_file_start},${true_file_end}p" $archive
+}
+
+
 while true; do
     printf "vsh> "
     read cmd arg
