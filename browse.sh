@@ -187,7 +187,7 @@ sed -i "${true_file_start},${true_file_end}d" $archive
 
 function delete_file {
     contained_files_1st=$(echo $contained_files | awk '{print $1}')             # Récupération du nom du fichier dans le dossier
-    sed -i "/^$contained_files_1st /d" $archive                                  #ISSOU JAI AJOUTÉ ^ ET UN ESPACE POUR VOIR
+    sed -i "/^$contained_files_1st /d" $archive                                 
     echo "Suppression de "$contained_files_1st
 }
 
