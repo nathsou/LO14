@@ -6,6 +6,7 @@ declare -r server_name=$2 #archive server address
 declare -r port=$3 #archive server port
 declare -r args=$(echo $* | cut -d " " -f4-)
 tmp_arch="tmp.arch" #mktemp
+needs_exit=0
 
 send_cmd_fast(){
     echo $1 | nc $server_name $port
@@ -17,7 +18,9 @@ function send_cmd() {
 
 function clean_up() {
     [[ -f $tmp_arch ]] && rm -rf $tmp_arch 
-    send_cmd_fast "exit"
+    if [[ needs_exit -eq 1 ]]; then
+        send_cmd_fast "exit"
+    fi
 }
 trap clean_up SIGINT EXIT SIGTERM
 
@@ -44,20 +47,40 @@ function browse() {
     nc $server_name $port
 }
 
+function check_server(){
+    if ! nc -zv $server_name $port 2>/dev/null; then
+        echo "server at address $server_name is not listening on port $port"
+        exit 1
+    fi
+
+    needs_exit=1
+}
+
 case $mode in 
     list)
+        check_server
         send_cmd "list"
         ;;
     
     extract)
+        check_server
         extract $args
         ;;
 
     browse)
+        check_server
         browse $args
         #echo "browse $args" | nc $server_name $port
         ;;
     *)
-        echo "Usage : vsh -[list, browse, extract] server_address port"
+        echo "Usage : vsh <mode> <server_address> <port> <archive_name>"
+        echo "mode can be :"
+        echo "  -list : display all archives available on the server"
+        echo "  -extract : extract the given archive locally"
+        echo "  -browse : enter the vsh shell"
+        echo "server_address : adresse IP du serveur"
+        echo "port : port du serveur"
+        echo "archive_name : nom de l'archive utilisée pour les modes browse et extract"
+        echo ""
         ;;
-    esac
+esac
