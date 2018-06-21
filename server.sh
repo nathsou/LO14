@@ -22,7 +22,7 @@ function interaction() {
     local mode args
     while true; do
         read mode args || exit -1
-        /bin/bash vsh_server.sh $mode $args
+        bash utils/vsh_server.sh $mode $args
     done
 }
 

@@ -39,7 +39,7 @@ function extract() {
         echo $cmd >> $tmp_arch
     done < <((echo "extract $arch"; sleep .2) | nc $server_name $port)
 
-    /bin/bash extract.sh $tmp_arch $dir
+    bash utils/extract.sh $tmp_arch $dir
 }
 
 function browse() {

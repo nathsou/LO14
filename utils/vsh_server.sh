@@ -12,7 +12,7 @@ function archive_exists(){
 
 function check_archive(){
     if ! archive_exists $1; then
-        echo "Archive $1 does not exist"
+        echo "Archive '$1' does not exist"
         exit 1
     fi
 }
@@ -27,7 +27,7 @@ function vsh_list(){
 }
 
 function vsh_browse(){
-    bash browse.sh $1
+    bash utils/browse.sh $1
 }
 
 if [ $mode == "list" ]; then 
