@@ -23,6 +23,7 @@ function interaction() {
     while true; do
         read mode args || exit -1
         bash utils/vsh_server.sh $mode $args
+        exit $?
     done
 }
 

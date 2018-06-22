@@ -33,7 +33,10 @@ function extract() {
     while true; do
         read -r cmd
 
-        if [[ $cmd = "VSH_END_EXTRACT" ]]; then
+        if [[ $cmd == "VSH_END_EXTRACT" ]]; then
+            break
+        elif [[ $cmd == "VSH_EXTRACT_UNK_ARCH" ]]; then
+            echo "Archive '$arch' does not exist"
             break
         fi
         echo $cmd >> $tmp_arch
@@ -78,9 +81,9 @@ case $mode in
         echo "  -list : display all archives available on the server"
         echo "  -extract : extract the given archive locally"
         echo "  -browse : enter the vsh shell"
-        echo "server_address : adresse IP du serveur"
-        echo "port : port du serveur"
-        echo "archive_name : nom de l'archive utilisée pour les modes browse et extract"
+        echo "server_address : server's IP address"
+        echo "port : server's port"
+        echo "archive_name : name of the archive to be used in the extract and browse modes"
         echo ""
         ;;
 esac

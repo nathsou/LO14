@@ -35,7 +35,7 @@ if [ $mode == "list" ]; then
 elif [ $mode == "extract" ]; then
     arch=$(echo $args | cut -d ' ' -f1)
     if ! archive_exists $arch; then
-        echo -e "\nVSH_END_EXTRACT"
+        echo -e "\nVSH_EXTRACT_UNK_ARCH"
         echo -e "\nno archive named $arch"
         exit 1
     fi

@@ -1,4 +1,4 @@
-# Projet LO14
+# LO14 Project
 
 Text archive server and client in bash for the LO14 (System administration) module at the UTT.
 
