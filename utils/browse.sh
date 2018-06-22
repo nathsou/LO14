@@ -158,7 +158,7 @@ function vsh_rm(){
     if [[ "$directory" = *"$arg"* ]]
         then
             echo "Suppression du dossier "$arg
-            escaped_arg=$(echo $arg | sed 's:/:\\/:g' )# Préparation de $arg pour sed et awk              
+            escaped_arg=$(echo $arg | sed 's:/:\\/:g') 			#Préparation de $arg pour sed et awk              
 
 
             # Check récursif si le dossier contient un sous-dossier et placement dans ce sous-dossier
