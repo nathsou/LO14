@@ -83,12 +83,7 @@ function get_dir_contents(){
 function vsh_cd(){
     arg=$1
     path=$(get_absolute_path $1)
-    if [[ "$arg" == '/' ]]; then
-        working_dir=$root
-    elif [[ "$arg" == '..' ]]; then
-        remove=$(echo $working_dir | rev | cut -d'/' -f1 | rev)                      
-        working_dir=$(echo $working_dir | sed "s:/$remove::")
-    elif dir_exists $path; then
+    if dir_exists $path; then
         working_dir=$path
     else
         if file_exists $path; then
