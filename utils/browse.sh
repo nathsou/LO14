@@ -2,14 +2,18 @@
 
 declare -r archive_dir="archives"
 declare -r archive="$archive_dir/$1"
-declare -r root=$(awk '/^directory/ {print $2; exit 0}' $archive | cut -d "/" -f 1,2)
+declare -r root=$(awk '/^directory/ {print $2; exit 0}' $archive | cut -d "/" -f1,2)
 working_dir=$root
 
 function get_absolute_path(){
     path=$1
 
 	if [[ $(echo $path | grep "^/") || $(echo $path | grep "^$root") ]]; then	#absolute path
-		path=$path
+        if [[ $path == "/" ]]; then
+            path=$root
+        else 
+            path=$path
+        fi
 	else
 		path="$working_dir/$path"
 	fi
@@ -19,7 +23,9 @@ function get_absolute_path(){
     #remove './''
     path=$(echo $path | sed -e 's/\/\.\//\//g');
     #replace 'A/B/../C' by 'A/C'
-    path=$(echo $path | sed -e 's/[^\.\/]\{1,\}\/\.\.\///g');
+    while [[ $(echo $path | grep -c '\.\.') -ne 0 ]]; do
+        path=$(echo $path | sed -e 's/[^\.\/]\{1,\}\/\.\.\/\{0,1\}//g')
+    done
     #remove trailing slashes and replace duplicates
     path=$(echo $path | sed -e 's:/*$::')
 
@@ -152,11 +158,11 @@ function vsh_rm(){
     if [[ "$directory" = *"$arg"* ]]
         then
             echo "Suppression du dossier "$arg
-            escaped_arg=$(echo $arg | sed 's:/:\\/:g' ) #Préparation de $arg pour sed et awk              
+            escaped_arg=$(echo $arg | sed 's:/:\\/:g' )# Préparation de $arg pour sed et awk              
 
 
-            # Check réursif si le dossier contient un sous-dossier et placement dans ce sous-dossier
-            while [[ $(sed -n "/^directory $escaped_arg\(\/$\|$\)/,/^@$/{/^directory $escaped_arg/d; /^@$/d; p;}" $archive | awk 'NR==1 {print NF}c' ) = '3' ]] 
+            # Check récursif si le dossier contient un sous-dossier et placement dans ce sous-dossier
+            while [[ $(sed -n "/^directory $escaped_arg\(\/$\|$\)/,/^@$/{/^directory $escaped_arg/d; /^@$/d; p;}" $archive | awk 'NR==1 {print NF}' ) = '3' ]] 
             do
                 sub_dir=$(sed -n "/^directory $escaped_arg\(\/$\|$\)/,/^@$/{/^directory $escaped_arg/d; /^@$/d; p;}" $archive | awk 'NR==1 {print $1}' )                # Récupération du nom du sous-dossier
                 arg=$arg"/"$sub_dir
